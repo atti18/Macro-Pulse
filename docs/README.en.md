@@ -2,14 +2,12 @@
 
 # Macro Pulse Bot
 
-Macro Pulse Bot is an automation project that collects market data and turns it into a simple daily report.
+Macro Pulse Bot is an automation project that sends Telegram reports combining market macro indicators and index heatmaps.
 
 - It gathers market data.
 - It creates an HTML report.
 - It can send the result to Telegram.
 - It can run automatically with GitHub Actions.
-
-If you are not familiar with finance, the easiest way to think about it is: "a bot that collects important market numbers and summarizes them."
 
 ## Features
 
@@ -61,8 +59,6 @@ That file controls:
 - which items are included
 - which screenshots are attached
 - the KR/US workflow cron schedule
-
-You do not need deep Python knowledge for simple ordering changes.
 
 ## Fork Setup
 
@@ -128,3 +124,9 @@ RUN_SCREENSHOT_SMOKE_TESTS=1 uv run python -m unittest tests.test_screenshot
 - If Telegram messages do not arrive, re-check `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`.
 - If some numbers are missing, an external data source may have failed.
 - If GitHub Pages does not update, check that `Settings > Pages` uses `GitHub Actions` as the source.
+
+## Disclaimer
+
+This repository is intended to share a rules-based automation workflow and implementation approach.
+It is not intended to provide investment advice, recommendations, or guaranteed signals for actual investment decisions.
+You are responsible for any use of the project and its output.
