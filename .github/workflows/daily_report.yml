@@ -1,24 +1,20 @@
 name: Daily Macro Pulse Report
-
 on:
   schedule:
     # BEGIN GENERATED SCHEDULES
-    # KR | 17:00 KST | 08:00 UTC | Mon-Fri
-    - cron: '00 08 * * 1-5'
-    # US | 06:30 KST | 21:30 UTC | Tue-Sat KST
-    - cron: '30 21 * * 1-5'
+    # KR | 17:13 KST | 08:13 UTC | Mon-Fri
+    - cron: '13 08 * * 1-5'
+    # US | 06:43 KST | 21:43 UTC | Tue-Sat KST
+    - cron: '43 21 * * 1-5'
     # END GENERATED SCHEDULES
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: github-pages
   cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,14 +22,11 @@ jobs:
       REPORT_FORMAT_CONFIG: config/report_formats.json
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v5
-
     - name: Build runtime image
       run: docker build -t macro-pulse:daily .
-
     - name: Run unit tests in Docker
       run: |
         docker run --rm \
@@ -41,7 +34,6 @@ jobs:
           -w /app \
           macro-pulse:daily \
           sh -lc "uv run --frozen python -m unittest discover tests 2>&1 | tee unit-test.log"
-
     - name: Run Macro Pulse Bot in Docker
       run: |
         docker run --rm \
@@ -52,27 +44,23 @@ jobs:
           -w /app \
           macro-pulse:daily \
           sh -lc "uv run --frozen python src/main.py 2>&1 | tee macro-pulse.log"
-      
+
     - name: Validate generated report
       if: success()
       run: test -s macro_pulse_report.html
-
     - name: Prepare public directory
       if: success()
       run: |
         mkdir -p public
         mv macro_pulse_report.html public/index.html
-
     - name: Configure GitHub Pages
       if: success()
       uses: actions/configure-pages@v5
-
     - name: Upload GitHub Pages artifact
       if: success()
       uses: actions/upload-pages-artifact@v4
       with:
         path: ./public
-
     - name: Upload workflow artifacts
       if: always()
       uses: actions/upload-artifact@v6
@@ -84,7 +72,6 @@ jobs:
           macro-pulse.log
           unit-test.log
         if-no-files-found: ignore
-
   deploy:
     if: ${{ needs.build.result == 'success' }}
     needs: build
@@ -92,12 +79,10 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
-
   notify-failure:
     if: ${{ always() && (needs.build.result == 'failure' || needs.deploy.result == 'failure') }}
     needs:
@@ -107,7 +92,6 @@ jobs:
     env:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-
     steps:
     - name: Send failure notification
       if: env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != ''
